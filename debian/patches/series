@@ -1,0 +1,6 @@
+i18n-fix.patch
+Drop-bluecloth-development-dependency.patch
+fix-relative-path.patch
+test_haml-update-for-haml-5.patch
+0005-Fix-additional-Ruby-2.7-keyword-warnings-1586.patch
+0006-Update-Rack-handler-call-to-use-kw-args.patch

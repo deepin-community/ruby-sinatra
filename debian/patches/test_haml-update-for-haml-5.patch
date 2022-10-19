@@ -1,0 +1,30 @@
+From: Antonio Terceiro <terceiro@debian.org>
+Date: Mon, 21 Jan 2019 09:51:38 -0200
+Subject: test_haml: update for haml 5
+
+This fixes the tests to pass against haml 5.x, but the tests are still
+too fragile and can fail on minor changes to how haml produces html.
+---
+ test/haml_test.rb | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/test/haml_test.rb b/test/haml_test.rb
+index f2e713d..7e61fa3 100644
+--- a/test/haml_test.rb
++++ b/test/haml_test.rb
+@@ -31,13 +31,13 @@ class HAMLTest < Minitest::Test
+     end
+     get '/'
+     assert ok?
+-    assert_equal "<h1>THIS. IS. <EM>SPARTA</EM></h1>\n", body
++    assert_equal "<h1>THIS. IS. <EM>SPARTA</EM>\n</h1>\n", body
+   end
+ 
+   it "renders with file layouts" do
+     haml_app { haml 'Hello World', :layout => :layout2 }
+     assert ok?
+-    assert_equal "<h1>HAML Layout!</h1>\n<p>Hello World</p>\n", body
++    assert_equal "<h1>HAML Layout!</h1>\n<p>Hello World\n</p>\n", body
+   end
+ 
+   it "raises error if template not found" do

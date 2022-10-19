@@ -1,0 +1,22 @@
+From: Balasankar C <balasankarc@autistici.org>
+Date: Tue, 5 Jul 2016 15:47:54 +0200
+Subject: Specify available locales during tests.
+
+---
+ test/helper.rb | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/test/helper.rb b/test/helper.rb
+index afbc50a..5b224ef 100644
+--- a/test/helper.rb
++++ b/test/helper.rb
+@@ -37,6 +37,9 @@ require 'active_support/core_ext/hash/keys'
+ 
+ require 'sinatra/base'
+ 
++require 'i18n'
++I18n.config.available_locales = :en
++
+ class Sinatra::Base
+   include Minitest::Assertions
+   # Allow assertions in request context

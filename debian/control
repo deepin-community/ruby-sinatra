@@ -1,0 +1,115 @@
+Source: ruby-sinatra
+Section: ruby
+Priority: optional
+Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
+Uploaders: Youhei SASAKI <uwabami@gfd-dennou.org>,
+           Pirate Praveen <praveen@debian.org>
+Build-Depends: asciidoctor,
+               debhelper-compat (= 12),
+               gem2deb,
+               puma <!nocheck>,
+               rake <!nocheck>,
+               ruby-builder <!nocheck>,
+               ruby-coffee-script <!nocheck>,
+               ruby-creole <!nocheck>,
+               ruby-erubis <!nocheck>,
+               ruby-haml <!nocheck>,
+               ruby-http <!nocheck>,
+               ruby-json <!nocheck>,
+               ruby-kramdown <!nocheck>,
+               ruby-liquid <!nocheck>,
+               ruby-maruku <!nocheck>,
+               ruby-minitest <!nocheck>,
+               ruby-mustermann <!nocheck>,
+               ruby-nokogiri <!nocheck>,
+               ruby-rabl <!nocheck>,
+               ruby-rack (>= 2.0~) <!nocheck>,
+               ruby-rack-test <!nocheck>,
+               ruby-rdiscount <!nocheck>,
+               ruby-redcarpet <!nocheck>,
+               ruby-redcloth <!nocheck>,
+               ruby-sass <!nocheck>,
+               ruby-slim (>= 3.0~) <!nocheck>,
+               ruby-tilt (>= 2.0~) <!nocheck>,
+               ruby-wikicloth <!nocheck>,
+               ruby-yajl <!nocheck>,
+               thin <!nocheck>
+Standards-Version: 4.5.0
+Vcs-Git: https://salsa.debian.org/ruby-team/ruby-sinatra.git
+Vcs-Browser: https://salsa.debian.org/ruby-team/ruby-sinatra
+Homepage: http://www.sinatrarb.com/
+Testsuite: autopkgtest-pkg-ruby
+XS-Ruby-Versions: all
+Rules-Requires-Root: no
+
+Package: ruby-sinatra
+Architecture: all
+X-DhRuby-Root: .
+XB-Ruby-Versions: ${ruby:Versions}
+Depends: ruby | ruby-interpreter,
+         ruby-rack (>= 2.0~),
+         ruby-rack-protection (>= 2.0.5~),
+         ruby-mustermann,
+         ruby-tilt (>= 2.0~),
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: Ruby web-development dressed in a DSL
+ Sinatra is an open source web framework for Ruby programming language.
+ It provides simple Domain Specific Language (DSL) for defining RESTful
+ HTTP actions, and then defining how the application is going to respond
+ to them.
+ .
+ This framework is lighweight and uses Rack which is a web server
+ interface developed to run many Ruby frameworks using the same stack.
+
+Package: ruby-sinatra-contrib
+Architecture: all
+X-DhRuby-Root: sinatra-contrib/
+XB-Ruby-Versions: ${ruby:Versions}
+Depends: ruby,
+         ruby-mustermann (>= 1.0~),
+         ruby-sinatra (>= 2.0.5~),
+         ruby-backports (>= 2.8.2),
+         ruby-tilt (>= 2.0~),
+         ruby-rack-protection (>= 2.0.5~),
+         ruby-multi-json,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: collection of useful extensions to the Sinatra web framework
+ sinatra-contrib is a collection of common extensions to the Sinatra web
+ framework, semi-officially supported:
+  - capture: Lets you capture the content of blocks in templates.
+  - config_file: Allows loading configuration from yaml files.
+  - content_for: Adds Rails-style content_for helpers to Haml, Erb,
+    Erubis and Slim.
+  - cookies: A cookies helper for reading and writing cookies.
+  - engine_tracking: Adds methods like haml? that allow helper methods
+    to check whether they are called from within a template.
+  - json: Adds a #json helper method to return JSON documents.
+  - link_header: Helpers for generating link HTML tags and
+    corresponding Link HTTP headers. Adds link, stylesheet and prefetch helper
+    methods.
+  - multi_route: Adds ability to define one route block for multiple
+    routes and multiple or custom HTTP verbs.
+  - namespace: Adds namespace support to Sinatra.
+  - respond_with: Choose action and/or template automatically depending
+    on the incoming request. Adds helpers respond_to and respond_with.
+  - custom_logger: Allows one to define their own logger instance.
+  - decompile: Recreates path patterns from Sinatra's internal data
+    structures (used by other extensions).
+  - reloader: Automatically reloads Ruby files on code changes.
+  - extension: Mixin for writing your own Sinatra extensions.
+  - test_helpers: Helper methods to ease testing your Sinatra
+    application. Partly extracted from Sinatra. Testing framework agnostic.
+
+Package: ruby-rack-protection
+Architecture: all
+X-DhRuby-Root: rack-protection/
+XB-Ruby-Versions: ${ruby:Versions}
+Depends: ruby | ruby-interpreter,
+         ruby-rack,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: Protects against typical web attacks for Rack apps
+ This library protects against typical web attacks. Should work for all
+ Rack apps, including Rails.

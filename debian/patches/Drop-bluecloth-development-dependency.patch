@@ -1,0 +1,22 @@
+From: Christian Hofstaedtler <zeha@debian.org>
+Date: Tue, 5 Jul 2016 15:45:57 +0200
+Subject: Drop bluecloth development dependency
+
+bluecloth is obsolete, and sinatra does not directly use it. Patch
+it out of Gemfile, so we can remove bluecloth.
+---
+ Gemfile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Gemfile b/Gemfile
+index df2f593..a79b976 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -35,7 +35,6 @@ if RUBY_ENGINE == "ruby"
+   gem 'therubyracer'
+   gem 'redcarpet'
+   gem 'wlang', '>= 2.0.1'
+-  gem 'bluecloth'
+   gem 'rdiscount'
+   gem 'RedCloth'
+   gem 'puma'

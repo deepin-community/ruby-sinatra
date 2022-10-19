@@ -1,0 +1,37 @@
+From: Jordan Owens <jkowens@gmail.com>
+Date: Wed, 18 Mar 2020 15:36:27 -0400
+Subject: Update Rack handler call to use kw args
+
+Ruby 2.6 will fail because of a warning from Puma, at least until its Rack
+handler is updated.
+---
+ lib/sinatra/base.rb      | 2 +-
+ test/integration_test.rb | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/sinatra/base.rb b/lib/sinatra/base.rb
+index f5d7729..324df5e 100644
+--- a/lib/sinatra/base.rb
++++ b/lib/sinatra/base.rb
+@@ -1523,7 +1523,7 @@ module Sinatra
+         # behavior, by ensuring an instance exists:
+         prototype
+         # Run the instance we created:
+-        handler.run(self, server_settings) do |server|
++        handler.run(self, **server_settings) do |server|
+           unless suppress_messages?
+             $stderr.puts "== Sinatra (v#{Sinatra::VERSION}) has taken the stage on #{port} for #{environment} with backup from #{handler_name}"
+           end
+diff --git a/test/integration_test.rb b/test/integration_test.rb
+index feda6e0..1e9f41b 100644
+--- a/test/integration_test.rb
++++ b/test/integration_test.rb
+@@ -89,7 +89,7 @@ class IntegrationTest < Minitest::Test
+   it 'does not generate warnings' do
+     assert_raises(OpenURI::HTTPError) { server.get '/' }
+     server.get '/app_file'
+-    assert_equal [], server.warnings
++    assert_equal [], server.warnings unless server.reel?
+   end
+ 
+   it 'sets the Content-Length response header when sending files' do
