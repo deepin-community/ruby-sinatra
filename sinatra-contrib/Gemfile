@@ -1,35 +1,32 @@
-source "https://rubygems.org" unless ENV['QUICK']
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
 gemspec
 
-gem 'sinatra', path: '..'
 gem 'rack-protection', path: '../rack-protection'
-gem "twitter-text", "1.14.7"
+gem 'sinatra', path: '..'
+
+gem 'rack-test', github: 'rack/rack-test'
 
 group :development, :test do
   platform :jruby do
     gem 'json'
     gem 'rdoc'
-  end
-
-  platform :jruby do
     gem 'therubyrhino'
+    gem 'jar-dependencies', '= 0.4.1' # Gem::LoadError with jar-dependencies 0.4.2
   end
 
   platform :jruby, :ruby do
-    gem 'hamlit'
-    gem 'hamlit-block', '>= 0.7.1'
+    gem 'hamlit', '>= 3'
     gem 'liquid', '~> 2.6.x'
     gem 'slim'
   end
 
   platform :ruby do
     gem 'execjs', '2.0.0'
-    gem 'nokogiri', '1.5.10'
-    gem 'redcarpet', '2.3.0'
+    gem 'nokogiri', '1.13.6'
+    gem 'redcarpet', '3.5.1'
     gem 'yajl-ruby'
-    # ref is a dependency of therubyracer
-    gem 'ref'
-    gem 'therubyracer'
   end
 
   gem 'multi_json'
@@ -41,6 +38,6 @@ repos = { 'tilt' => 'rtomayko/tilt', 'rack' => 'rack/rack' }
 %w[tilt rack].each do |lib|
   dep = (ENV[lib] || 'stable').sub "#{lib}-", ''
   dep = nil if dep == 'stable'
-  dep = {:github => repos[lib], :branch => dep} if dep and dep !~ /(\d+\.)+\d+/
+  dep = { github: repos[lib], branch: dep } if dep && dep !~ (/(\d+\.)+\d+/)
   gem lib, dep if dep
 end

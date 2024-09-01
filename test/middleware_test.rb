@@ -1,4 +1,4 @@
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('helper', __dir__)
 
 class MiddlewareTest < Minitest::Test
   setup do
@@ -97,4 +97,14 @@ class MiddlewareTest < Minitest::Test
     get '/'
   end
 
+  class KeywordArgumentIntializationMiddleware < MockMiddleware
+    def initialize(app, **)
+      super app
+    end
+  end
+
+  it "handles keyword arguments" do
+    @app.use KeywordArgumentIntializationMiddleware, argument: "argument"
+    get '/'
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rack/protection/version'
 require 'rack'
 
@@ -7,6 +9,8 @@ module Rack
     autoload :Base,                  'rack/protection/base'
     autoload :CookieTossing,         'rack/protection/cookie_tossing'
     autoload :ContentSecurityPolicy, 'rack/protection/content_security_policy'
+    autoload :Encryptor,             'rack/protection/encryptor'
+    autoload :EncryptedCookie,       'rack/protection/encrypted_cookie'
     autoload :EscapedParams,         'rack/protection/escaped_params'
     autoload :FormToken,             'rack/protection/form_token'
     autoload :FrameOptions,          'rack/protection/frame_options'
@@ -14,6 +18,7 @@ module Rack
     autoload :IPSpoofing,            'rack/protection/ip_spoofing'
     autoload :JsonCsrf,              'rack/protection/json_csrf'
     autoload :PathTraversal,         'rack/protection/path_traversal'
+    autoload :ReferrerPolicy,        'rack/protection/referrer_policy'
     autoload :RemoteReferrer,        'rack/protection/remote_referrer'
     autoload :RemoteToken,           'rack/protection/remote_token'
     autoload :SessionHijacking,      'rack/protection/session_hijacking'
@@ -26,15 +31,17 @@ module Rack
       use_these = Array options[:use]
 
       if options.fetch(:without_session, false)
-        except += [:session_hijacking, :remote_token]
+        except += %i[session_hijacking remote_token]
       end
 
       Rack::Builder.new do
         # Off by default, unless added
         use ::Rack::Protection::AuthenticityToken,     options if use_these.include? :authenticity_token
-        use ::Rack::Protection::CookieTossing,         options if use_these.include? :cookie_tossing
         use ::Rack::Protection::ContentSecurityPolicy, options if use_these.include? :content_security_policy
+        use ::Rack::Protection::CookieTossing,         options if use_these.include? :cookie_tossing
+        use ::Rack::Protection::EscapedParams,         options if use_these.include? :escaped_params
         use ::Rack::Protection::FormToken,             options if use_these.include? :form_token
+        use ::Rack::Protection::ReferrerPolicy,        options if use_these.include? :referrer_policy
         use ::Rack::Protection::RemoteReferrer,        options if use_these.include? :remote_referrer
         use ::Rack::Protection::StrictTransport,       options if use_these.include? :strict_transport
 

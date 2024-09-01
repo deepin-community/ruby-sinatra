@@ -1,8 +1,7 @@
 # Sinatra
 
-[![Gem Version](https://badge.fury.io/rb/sinatra.svg)](http://badge.fury.io/rb/sinatra)
-[![Build Status](https://secure.travis-ci.org/sinatra/sinatra.svg)](https://travis-ci.org/sinatra/sinatra)
-[![SemVer](https://api.dependabot.com/badges/compatibility_score?dependency-name=sinatra&package-manager=bundler&version-scheme=semver)](https://dependabot.com/compatibility-score.html?dependency-name=sinatra&package-manager=bundler&version-scheme=semver)
+[![Gem Version](https://badge.fury.io/rb/sinatra.svg)](https://badge.fury.io/rb/sinatra)
+[![Testing](https://github.com/sinatra/sinatra/actions/workflows/test.yml/badge.svg)](https://github.com/sinatra/sinatra/actions/workflows/test.yml)
 
 Sinatra is a [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) for
 quickly creating web applications in Ruby with minimal effort:
@@ -20,6 +19,7 @@ Install the gem:
 
 ```shell
 gem install sinatra
+gem install puma # or any other server
 ```
 
 And run with:
@@ -31,101 +31,92 @@ ruby myapp.rb
 View at: [http://localhost:4567](http://localhost:4567)
 
 The code you changed will not take effect until you restart the server.
-Please restart the server every time you change or use
-[sinatra/reloader](http://www.sinatrarb.com/contrib/reloader).
+Please restart the server every time you change or use a code reloader
+like [rerun](https://github.com/alexch/rerun) or
+[rack-unreloader](https://github.com/jeremyevans/rack-unreloader).
 
-It is recommended to also run `gem install thin`, which Sinatra will
+It is recommended to also run `gem install puma`, which Sinatra will
 pick up if available.
 
 ## Table of Contents
 
-* [Sinatra](#sinatra)
-    * [Table of Contents](#table-of-contents)
-    * [Routes](#routes)
-    * [Conditions](#conditions)
-    * [Return Values](#return-values)
-    * [Custom Route Matchers](#custom-route-matchers)
-    * [Static Files](#static-files)
-    * [Views / Templates](#views--templates)
-        * [Literal Templates](#literal-templates)
-        * [Available Template Languages](#available-template-languages)
-            * [Haml Templates](#haml-templates)
-            * [Erb Templates](#erb-templates)
-            * [Builder Templates](#builder-templates)
-            * [Nokogiri Templates](#nokogiri-templates)
-            * [Sass Templates](#sass-templates)
-            * [SCSS Templates](#scss-templates)
-            * [Less Templates](#less-templates)
-            * [Liquid Templates](#liquid-templates)
-            * [Markdown Templates](#markdown-templates)
-            * [Textile Templates](#textile-templates)
-            * [RDoc Templates](#rdoc-templates)
-            * [AsciiDoc Templates](#asciidoc-templates)
-            * [Radius Templates](#radius-templates)
-            * [Markaby Templates](#markaby-templates)
-            * [RABL Templates](#rabl-templates)
-            * [Slim Templates](#slim-templates)
-            * [Creole Templates](#creole-templates)
-            * [MediaWiki Templates](#mediawiki-templates)
-            * [CoffeeScript Templates](#coffeescript-templates)
-            * [Stylus Templates](#stylus-templates)
-            * [Yajl Templates](#yajl-templates)
-            * [WLang Templates](#wlang-templates)
-        * [Accessing Variables in Templates](#accessing-variables-in-templates)
-        * [Templates with `yield` and nested layouts](#templates-with-yield-and-nested-layouts)
-        * [Inline Templates](#inline-templates)
-        * [Named Templates](#named-templates)
-        * [Associating File Extensions](#associating-file-extensions)
-        * [Adding Your Own Template Engine](#adding-your-own-template-engine)
-        * [Using Custom Logic for Template Lookup](#using-custom-logic-for-template-lookup)
-    * [Filters](#filters)
-    * [Helpers](#helpers)
-        * [Using Sessions](#using-sessions)
-            * [Session Secret Security](#session-secret-security)
-            * [Session Config](#session-config)
-            * [Choosing Your Own Session Middleware](#choosing-your-own-session-middleware)
-        * [Halting](#halting)
-        * [Passing](#passing)
-        * [Triggering Another Route](#triggering-another-route)
-        * [Setting Body, Status Code and Headers](#setting-body-status-code-and-headers)
-        * [Streaming Responses](#streaming-responses)
-        * [Logging](#logging)
-        * [Mime Types](#mime-types)
-        * [Generating URLs](#generating-urls)
-        * [Browser Redirect](#browser-redirect)
-        * [Cache Control](#cache-control)
-        * [Sending Files](#sending-files)
-        * [Accessing the Request Object](#accessing-the-request-object)
-        * [Attachments](#attachments)
-        * [Dealing with Date and Time](#dealing-with-date-and-time)
-        * [Looking Up Template Files](#looking-up-template-files)
-    * [Configuration](#configuration)
-        * [Configuring attack protection](#configuring-attack-protection)
-        * [Available Settings](#available-settings)
-    * [Environments](#environments)
-    * [Error Handling](#error-handling)
-        * [Not Found](#not-found)
-        * [Error](#error)
-    * [Rack Middleware](#rack-middleware)
-    * [Testing](#testing)
-    * [Sinatra::Base - Middleware, Libraries, and Modular Apps](#sinatrabase---middleware-libraries-and-modular-apps)
-        * [Modular vs. Classic Style](#modular-vs-classic-style)
-        * [Serving a Modular Application](#serving-a-modular-application)
-        * [Using a Classic Style Application with a config.ru](#using-a-classic-style-application-with-a-configru)
-        * [When to use a config.ru?](#when-to-use-a-configru)
-        * [Using Sinatra as Middleware](#using-sinatra-as-middleware)
-        * [Dynamic Application Creation](#dynamic-application-creation)
-    * [Scopes and Binding](#scopes-and-binding)
-        * [Application/Class Scope](#applicationclass-scope)
-        * [Request/Instance Scope](#requestinstance-scope)
-        * [Delegation Scope](#delegation-scope)
-    * [Command Line](#command-line)
-        * [Multi-threading](#multi-threading)
-    * [Requirement](#requirement)
-    * [The Bleeding Edge](#the-bleeding-edge)
-        * [With Bundler](#with-bundler)
-    * [Versioning](#versioning)
-    * [Further Reading](#further-reading)
+- [Sinatra](#sinatra)
+  - [Table of Contents](#table-of-contents)
+  - [Routes](#routes)
+  - [Conditions](#conditions)
+  - [Return Values](#return-values)
+  - [Custom Route Matchers](#custom-route-matchers)
+  - [Static Files](#static-files)
+  - [Views / Templates](#views--templates)
+    - [Literal Templates](#literal-templates)
+    - [Available Template Languages](#available-template-languages)
+      - [Haml Templates](#haml-templates)
+      - [Erb Templates](#erb-templates)
+      - [Builder Templates](#builder-templates)
+      - [Nokogiri Templates](#nokogiri-templates)
+      - [Liquid Templates](#liquid-templates)
+      - [Markdown Templates](#markdown-templates)
+      - [RDoc Templates](#rdoc-templates)
+      - [AsciiDoc Templates](#asciidoc-templates)
+      - [Markaby Templates](#markaby-templates)
+      - [RABL Templates](#rabl-templates)
+      - [Slim Templates](#slim-templates)
+      - [Yajl Templates](#yajl-templates)
+    - [Accessing Variables in Templates](#accessing-variables-in-templates)
+    - [Templates with `yield` and nested layouts](#templates-with-yield-and-nested-layouts)
+    - [Inline Templates](#inline-templates)
+    - [Named Templates](#named-templates)
+    - [Associating File Extensions](#associating-file-extensions)
+    - [Adding Your Own Template Engine](#adding-your-own-template-engine)
+    - [Using Custom Logic for Template Lookup](#using-custom-logic-for-template-lookup)
+  - [Filters](#filters)
+  - [Helpers](#helpers)
+    - [Using Sessions](#using-sessions)
+      - [Session Secret Security](#session-secret-security)
+      - [Session Config](#session-config)
+      - [Choosing Your Own Session Middleware](#choosing-your-own-session-middleware)
+    - [Halting](#halting)
+    - [Passing](#passing)
+    - [Triggering Another Route](#triggering-another-route)
+    - [Setting Body, Status Code, and Headers](#setting-body-status-code-and-headers)
+    - [Streaming Responses](#streaming-responses)
+    - [Logging](#logging)
+    - [Mime Types](#mime-types)
+    - [Generating URLs](#generating-urls)
+    - [Browser Redirect](#browser-redirect)
+    - [Cache Control](#cache-control)
+    - [Sending Files](#sending-files)
+    - [Accessing the Request Object](#accessing-the-request-object)
+    - [Attachments](#attachments)
+    - [Dealing with Date and Time](#dealing-with-date-and-time)
+    - [Looking Up Template Files](#looking-up-template-files)
+  - [Configuration](#configuration)
+    - [Configuring attack protection](#configuring-attack-protection)
+    - [Available Settings](#available-settings)
+  - [Environments](#environments)
+  - [Error Handling](#error-handling)
+    - [Not Found](#not-found)
+    - [Error](#error)
+  - [Rack Middleware](#rack-middleware)
+  - [Testing](#testing)
+  - [Sinatra::Base - Middleware, Libraries, and Modular Apps](#sinatrabase---middleware-libraries-and-modular-apps)
+    - [Modular vs. Classic Style](#modular-vs-classic-style)
+    - [Serving a Modular Application](#serving-a-modular-application)
+    - [Using a Classic Style Application with a config.ru](#using-a-classic-style-application-with-a-configru)
+    - [When to use a config.ru?](#when-to-use-a-configru)
+    - [Using Sinatra as Middleware](#using-sinatra-as-middleware)
+    - [Dynamic Application Creation](#dynamic-application-creation)
+  - [Scopes and Binding](#scopes-and-binding)
+    - [Application/Class Scope](#applicationclass-scope)
+    - [Request/Instance Scope](#requestinstance-scope)
+    - [Delegation Scope](#delegation-scope)
+  - [Command Line](#command-line)
+    - [Multi-threading](#multi-threading)
+  - [Requirement](#requirement)
+  - [The Bleeding Edge](#the-bleeding-edge)
+    - [With Bundler](#with-bundler)
+  - [Versioning](#versioning)
+  - [Further Reading](#further-reading)
 
 ## Routes
 
@@ -344,11 +335,11 @@ end
 ## Return Values
 
 The return value of a route block determines at least the response body
-passed on to the HTTP client, or at least the next middleware in the
+passed on to the HTTP client or at least the next middleware in the
 Rack stack. Most commonly, this is a string, as in the above examples.
 But other values are also accepted.
 
-You can return any object that would either be a valid Rack response, Rack
+You can return an object that would either be a valid Rack response, Rack
 body object or HTTP status code:
 
 * An Array with three elements: `[status (Integer), headers (Hash), response
@@ -372,7 +363,7 @@ get('/') { Stream.new }
 ```
 
 You can also use the `stream` helper method ([described below](#streaming-responses)) to reduce
-boiler plate and embed the streaming logic in the route.
+boilerplate and embed the streaming logic in the route.
 
 ## Custom Route Matchers
 
@@ -382,15 +373,16 @@ stop there. You can easily define your own matchers:
 
 ```ruby
 class AllButPattern
-  Match = Struct.new(:captures)
-
   def initialize(except)
-    @except   = except
-    @captures = Match.new([])
+    @except = except
   end
 
-  def match(str)
-    @captures unless @except === str
+  def to_pattern(options)
+    return self
+  end
+
+  def params(route)
+    return {} unless @except === route
   end
 end
 
@@ -407,16 +399,8 @@ Note that the above example might be over-engineered, as it can also be
 expressed as:
 
 ```ruby
-get // do
+get /.*/ do
   pass if request.path_info == "/index"
-  # ...
-end
-```
-
-Or, using negative look ahead:
-
-```ruby
-get %r{(?!/index)} do
   # ...
 end
 ```
@@ -427,7 +411,7 @@ Static files are served from the `./public` directory. You can specify
 a different location by setting the `:public_folder` option:
 
 ```ruby
-set :public_folder, File.dirname(__FILE__) + '/static'
+set :public_folder, __dir__ + '/static'
 ```
 
 Note that the public directory name is not included in the URL. A file
@@ -584,7 +568,7 @@ Some languages have multiple implementations. To specify what implementation
 to use (and to be thread-safe), you should simply require it first:
 
 ```ruby
-require 'rdiscount' # or require 'bluecloth'
+require 'rdiscount'
 get('/') { markdown :index }
 ```
 
@@ -612,14 +596,12 @@ get('/') { markdown :index }
     <td>Dependency</td>
     <td>
       <a href="https://github.com/jeremyevans/erubi" title="erubi">erubi</a>
-      or <a href="http://www.kuwata-lab.com/erubis/" title="erubis">erubis</a>
       or erb (included in Ruby)
     </td>
   </tr>
   <tr>
     <td>File Extensions</td>
-    <td><tt>.erb</tt>, <tt>.rhtml</tt> or <tt>.erubi</tt> (Erubi only)
- or <tt>.erubis</tt> (Erubis only)</td>
+    <td><tt>.erb</tt>, <tt>.rhtml</tt> or <tt>.erubi</tt> (Erubi only)</td>
   </tr>
   <tr>
     <td>Example</td>
@@ -667,56 +649,6 @@ It also takes a block for inline templates (see [example](#inline-templates)).
 
 It also takes a block for inline templates (see [example](#inline-templates)).
 
-#### Sass Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td><a href="https://sass-lang.com/" title="sass">sass</a></td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.sass</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>sass :stylesheet, :style => :expanded</tt></td>
-  </tr>
-</table>
-
-#### SCSS Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td><a href="https://sass-lang.com/" title="sass">sass</a></td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.scss</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>scss :stylesheet, :style => :expanded</tt></td>
-  </tr>
-</table>
-
-#### Less Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td><a href="http://lesscss.org/" title="less">less</a></td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.less</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>less :stylesheet</tt></td>
-  </tr>
-</table>
 
 #### Liquid Templates
 
@@ -747,9 +679,7 @@ template, you almost always want to pass locals to it.
       Anyone of:
         <a href="https://github.com/davidfstr/rdiscount" title="RDiscount">RDiscount</a>,
         <a href="https://github.com/vmg/redcarpet" title="RedCarpet">RedCarpet</a>,
-        <a href="https://github.com/ged/bluecloth" title="BlueCloth">BlueCloth</a>,
         <a href="https://kramdown.gettalong.org/" title="kramdown">kramdown</a>,
-        <a href="https://github.com/bhollis/maruku" title="maruku">maruku</a>
         <a href="https://github.com/gjtorikian/commonmarker" title="commonmarker">commonmarker</a>
         <a href="https://github.com/alphabetum/pandoc-ruby" title="pandoc">pandoc</a>
     </td>
@@ -782,42 +712,6 @@ templates:
 
 Since you cannot call Ruby from Markdown, you cannot use layouts written in
 Markdown. However, it is possible to use another rendering engine for the
-template than for the layout by passing the `:layout_engine` option.
-
-#### Textile Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td><a href="http://redcloth.org/" title="RedCloth">RedCloth</a></td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.textile</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>textile :index, :layout_engine => :erb</tt></td>
-  </tr>
-</table>
-
-It is not possible to call methods from Textile, nor to pass locals to
-it. You therefore will usually use it in combination with another
-rendering engine:
-
-```ruby
-erb :overview, :locals => { :text => textile(:introduction) }
-```
-
-Note that you may also call the `textile` method from within other templates:
-
-```ruby
-%h1 Hello From Haml!
-%p= textile(:greetings)
-```
-
-Since you cannot call Ruby from Textile, you cannot use layouts written in
-Textile. However, it is possible to use another rendering engine for the
 template than for the layout by passing the `:layout_engine` option.
 
 #### RDoc Templates
@@ -875,26 +769,6 @@ template than for the layout by passing the `:layout_engine` option.
 Since you cannot call Ruby methods directly from an AsciiDoc template, you
 almost always want to pass locals to it.
 
-#### Radius Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td><a href="https://github.com/jlong/radius" title="Radius">Radius</a></td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.radius</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>radius :index, :locals => { :key => 'value' }</tt></td>
-  </tr>
-</table>
-
-Since you cannot call Ruby methods directly from a Radius template, you
-almost always want to pass locals to it.
-
 #### Markaby Templates
 
 <table>
@@ -948,139 +822,6 @@ It also takes a block for inline templates (see [example](#inline-templates)).
   </tr>
 </table>
 
-#### Creole Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td><a href="https://github.com/minad/creole" title="Creole">Creole</a></td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.creole</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>creole :wiki, :layout_engine => :erb</tt></td>
-  </tr>
-</table>
-
-It is not possible to call methods from Creole, nor to pass locals to it. You
-therefore will usually use it in combination with another rendering engine:
-
-```ruby
-erb :overview, :locals => { :text => creole(:introduction) }
-```
-
-Note that you may also call the `creole` method from within other templates:
-
-```ruby
-%h1 Hello From Haml!
-%p= creole(:greetings)
-```
-
-Since you cannot call Ruby from Creole, you cannot use layouts written in
-Creole. However, it is possible to use another rendering engine for the
-template than for the layout by passing the `:layout_engine` option.
-
-#### MediaWiki Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td><a href="https://github.com/nricciar/wikicloth" title="WikiCloth">WikiCloth</a></td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.mediawiki</tt> and <tt>.mw</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>mediawiki :wiki, :layout_engine => :erb</tt></td>
-  </tr>
-</table>
-
-It is not possible to call methods from MediaWiki markup, nor to pass
-locals to it. You therefore will usually use it in combination with
-another rendering engine:
-
-```ruby
-erb :overview, :locals => { :text => mediawiki(:introduction) }
-```
-
-Note that you may also call the `mediawiki` method from within other
-templates:
-
-```ruby
-%h1 Hello From Haml!
-%p= mediawiki(:greetings)
-```
-
-Since you cannot call Ruby from MediaWiki, you cannot use layouts written in
-MediaWiki. However, it is possible to use another rendering engine for the
-template than for the layout by passing the `:layout_engine` option.
-
-#### CoffeeScript Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td>
-      <a href="https://github.com/josh/ruby-coffee-script" title="Ruby CoffeeScript">
-        CoffeeScript
-      </a> and a
-      <a href="https://github.com/sstephenson/execjs" title="ExecJS">
-        way to execute javascript
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.coffee</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>coffee :index</tt></td>
-  </tr>
-</table>
-
-#### Stylus Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td>
-      <a href="https://github.com/forgecrafted/ruby-stylus" title="Ruby Stylus">
-        Stylus
-      </a> and a
-      <a href="https://github.com/sstephenson/execjs" title="ExecJS">
-        way to execute javascript
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.styl</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>stylus :index</tt></td>
-  </tr>
-</table>
-
-Before being able to use Stylus templates, you need to load `stylus` and
-`stylus/tilt` first:
-
-```ruby
-require 'sinatra'
-require 'stylus'
-require 'stylus/tilt'
-
-get '/' do
-  stylus :example
-end
-```
-
 #### Yajl Templates
 
 <table>
@@ -1121,27 +862,6 @@ object:
 var resource = {"foo":"bar","baz":"qux"};
 present(resource);
 ```
-
-#### WLang Templates
-
-<table>
-  <tr>
-    <td>Dependency</td>
-    <td><a href="https://github.com/blambeau/wlang" title="WLang">WLang</a></td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td><tt>.wlang</tt></td>
-  </tr>
-  <tr>
-    <td>Example</td>
-    <td><tt>wlang :index, :locals => { :key => 'value' }</tt></td>
-  </tr>
-</table>
-
-Since calling ruby methods is not idiomatic in WLang, you almost always
-want to pass locals to it. Layouts written in WLang and `yield` are
-supported, though.
 
 ### Accessing Variables in Templates
 
@@ -1201,7 +921,7 @@ end
 ```
 
 Currently, the following rendering methods accept a block: `erb`, `haml`,
-`liquid`, `slim `, `wlang`. Also the general `render` method accepts a block.
+`liquid`, `slim `. Also, the general `render` method accepts a block.
 
 ### Inline Templates
 
@@ -1218,13 +938,13 @@ __END__
 
 @@ layout
 %html
-  = yield
+  != yield
 
 @@ index
 %div.title Hello world.
 ```
 
-NOTE: Inline templates defined in the source file that requires sinatra are
+NOTE: Inline templates defined in the source file that requires Sinatra are
 automatically loaded. Call `enable :inline_templates` explicitly if you
 have inline templates in other source files.
 
@@ -1261,10 +981,10 @@ end
 
 To associate a file extension with a template engine, use
 `Tilt.register`. For instance, if you like to use the file extension
-`tt` for Textile templates, you can do the following:
+`tt` for Haml templates, you can do the following:
 
 ```ruby
-Tilt.register :tt, Tilt[:textile]
+Tilt.register Tilt[:haml], :tt
 ```
 
 ### Adding Your Own Template Engine
@@ -1272,7 +992,7 @@ Tilt.register :tt, Tilt[:textile]
 First, register your engine with Tilt, then create a rendering method:
 
 ```ruby
-Tilt.register :myat, MyAwesomeTemplateEngine
+Tilt.register MyAwesomeTemplateEngine, :myat
 
 helpers do
   def myat(*args) render(:myat, *args) end
@@ -1293,7 +1013,7 @@ own `#find_template` method:
 
 ```ruby
 configure do
-  set :views [ './views/a', './views/b' ]
+  set :views, [ './views/a', './views/b' ]
 end
 
 def find_template(views, name, engine, &block)
@@ -1434,7 +1154,7 @@ For better security and usability it's
 secret and store it in an environment variable on each host running your
 application so that all of your application instances will share the same
 secret. You should periodically rotate this session secret to a new value.
-Here are some examples of how you might create a 64 byte secret and set it:
+Here are some examples of how you might create a 64-byte secret and set it:
 
 **Session Secret Generation**
 
@@ -1446,7 +1166,7 @@ $ ruby -e "require 'securerandom'; puts SecureRandom.hex(64)"
 **Session Secret Generation (Bonus Points)**
 
 Use the [sysrandom gem](https://github.com/cryptosphere/sysrandom#readme) to
-prefer use of system RNG facilities to generate random values instead of
+use the system RNG facilities to generate random values instead of
 userspace `OpenSSL` which MRI Ruby currently defaults to:
 
 ```text
@@ -1472,7 +1192,7 @@ purposes only:
 
 **Session Secret App Config**
 
-Setup your app config to fail-safe to a secure random secret
+Set up your app config to fail-safe to a secure random secret
 if the `SESSION_SECRET` environment variable is not available.
 
 For bonus points use the [sysrandom
@@ -1593,7 +1313,7 @@ matching route. If no matching route is found, a 404 is returned.
 
 ### Triggering Another Route
 
-Sometimes `pass` is not what you want, instead you would like to get the
+Sometimes `pass` is not what you want, instead, you would like to get the
 result of calling another route. Simply use `call` to achieve this:
 
 ```ruby
@@ -1616,13 +1336,13 @@ than a duplicate, use `call!` instead of `call`.
 
 Check out the Rack specification if you want to learn more about `call`.
 
-### Setting Body, Status Code and Headers
+### Setting Body, Status Code, and Headers
 
 It is possible and recommended to set the status code and response body with
-the return value of the route block. However, in some scenarios you might
+the return value of the route block. However, in some scenarios, you might
 want to set the body at an arbitrary point in the execution flow. You can do
 so with the `body` helper method. If you do so, you can use that method from
-there on to access the body:
+thereon to access the body:
 
 ```ruby
 get '/foo' do
@@ -1645,7 +1365,7 @@ get '/foo' do
   headers \
     "Allow"   => "BREW, POST, GET, PROPFIND, WHEN",
     "Refresh" => "Refresh: 20; https://ietf.org/rfc/rfc2324.txt"
-  body "I'm a tea pot!"
+  body "I'm a teapot!"
 end
 ```
 
@@ -1678,43 +1398,59 @@ also be used to increase throughput if some but not all content depends on a
 slow resource.
 
 Note that the streaming behavior, especially the number of concurrent
-requests, highly depends on the web server used to serve the application.
+requests, highly depends on the webserver used to serve the application.
 Some servers might not even support streaming at all. If the server does not
 support streaming, the body will be sent all at once after the block passed
 to `stream` finishes executing. Streaming does not work at all with Shotgun.
 
 If the optional parameter is set to `keep_open`, it will not call `close` on
 the stream object, allowing you to close it at any later point in the
-execution flow. This only works on evented servers, like Thin and Rainbows.
+execution flow. This only works on evented servers, like Rainbows.
 Other servers will still close the stream:
 
 ```ruby
-# long polling
+# config.ru
+require 'sinatra/base'
 
-set :server, :thin
-connections = []
+class App < Sinatra::Base
+  connections = []
 
-get '/subscribe' do
-  # register a client's interest in server events
-  stream(:keep_open) do |out|
-    connections << out
-    # purge dead connections
-    connections.reject!(&:closed?)
+  get '/subscribe', provides: 'text/event-stream'  do
+    # register a client's interest in server events
+    stream(:keep_open) do |out|
+      connections << out
+      # purge dead connections
+      connections.reject!(&:closed?)
+    end
+  end
+
+  post '/' do
+    connections.each do |out|
+      # notify client that a new message has arrived
+      out << "data: #{params[:msg]}\n\n"
+
+      # indicate client to connect again
+      out.close
+    end
+
+    204 # response without entity body
   end
 end
 
-post '/:message' do
-  connections.each do |out|
-    # notify client that a new message has arrived
-    out << params['message'] << "\n"
+run App
+```
 
-    # indicate client to connect again
-    out.close
-  end
-
-  # acknowledge
-  "message received"
+```ruby
+# rainbows.conf
+Rainbows! do
+  use :EventMachine
 end
+````
+
+Run:
+
+```shell
+rainbows -c rainbows.conf
 ```
 
 It's also possible for the client to close the connection when trying to
@@ -1747,7 +1483,7 @@ class MyApp < Sinatra::Base
 end
 ```
 
-To avoid any logging middleware to be set up, set the `logging` setting to
+To avoid any logging middleware to be set up, set the `logging` option to
 `nil`. However, keep in mind that `logger` will in that case return `nil`. A
 common use case is when you want to set your own logger. Sinatra will use
 whatever it will find in `env['rack.logger']`.
@@ -1781,7 +1517,7 @@ Haml:
 %a{:href => url('/foo')} foo
 ```
 
-It takes reverse proxies and Rack routers into account, if present.
+It takes reverse proxies and Rack routers into account - if present.
 
 This method is also aliased to `to` (see [below](#browser-redirect) for an example).
 
@@ -2120,7 +1856,7 @@ end
 Another example would be using different directories for different engines:
 
 ```ruby
-set :views, :sass => 'views/sass', :haml => 'templates', :default => 'views'
+set :views, :haml => 'templates', :default => 'views'
 
 helpers do
   def find_template(views, name, engine, &block)
@@ -2131,7 +1867,7 @@ helpers do
 end
 ```
 
-You can also easily wrap this up in an extension and share with others!
+You can also easily wrap this up in an extension and share it with others!
 
 Note that `find_template` does not check if the file really exists but
 rather calls the given block for all possible paths. This is not a
@@ -2220,7 +1956,7 @@ set :protection, :except => [:path_traversal, :session_hijacking]
 By default, Sinatra will only set up session based protection if `:sessions`
 have been enabled. See '[Using Sessions](#using-sessions)'. Sometimes you may want to set up
 sessions "outside" of the Sinatra app, such as in the config.ru or with a
-separate `Rack::Builder` instance. In that case you can still set up session
+separate `Rack::Builder` instance. In that case, you can still set up session
 based protection by passing the `:session` option:
 
 ```ruby
@@ -2264,11 +2000,20 @@ set :protection, :session => true
       used for built-in server.
     </dd>
 
+  <dt>default_content_type</dt>
+  <dd>
+    Content-Type to assume if unknown (defaults to <tt>"text/html"</tt>). Set
+    to <tt>nil</tt> to not set a default Content-Type on every response; when
+    configured so, you must set the Content-Type manually when emitting content
+    or the user-agent will have to sniff it (or, if <tt>nosniff</tt> is enabled
+    in Rack::Protection::XSSHeader, assume <tt>application/octet-stream</tt>).
+  </dd>
+
   <dt>default_encoding</dt>
     <dd>Encoding to assume if unknown (defaults to <tt>"utf-8"</tt>).</dd>
 
   <dt>dump_errors</dt>
-    <dd>Display errors in the log.</dd>
+    <dd>Display errors in the log. Enabled by default unless environment is "test".</dd>
 
   <dt>environment</dt>
     <dd>
@@ -2368,7 +2113,7 @@ set :protection, :session => true
       If you are using a WEBrick web server, presumably for your development
       environment, you can pass a hash of options to <tt>server_settings</tt>,
       such as <tt>SSLEnable</tt> or <tt>SSLVerifyClient</tt>. However, web
-      servers such as Puma and Thin do not support this, so you can set
+      servers such as Puma do not support this, so you can set
       <tt>server_settings</tt> by defining it as a method when you call
       <tt>configure</tt>.
     </dd>
@@ -2419,7 +2164,7 @@ set :protection, :session => true
 
   <dt>threaded</dt>
     <dd>
-      If set to <tt>true</tt>, will tell Thin to use
+      If set to <tt>true</tt>, will tell server to use
       <tt>EventMachine.defer</tt> for processing the request.
     </dd>
 
@@ -2692,7 +2437,7 @@ modular application.
 The main disadvantage of using the classic style rather than the modular
 style is that you will only have one Sinatra application per Ruby
 process. If you plan to use more than one, switch to the modular style.
-There is no reason you cannot mix the modular and the classic styles.
+There is no reason you cannot mix the modular and classic styles.
 
 If switching from one style to the other, you should be aware of
 slightly different default settings:
@@ -2821,7 +2566,7 @@ style for running with a `config.ru`.**
 ### Using Sinatra as Middleware
 
 Not only is Sinatra able to use other Rack middleware, any Sinatra
-application can in turn be added in front of any Rack endpoint as
+application can, in turn, be added in front of any Rack endpoint as
 middleware itself. This endpoint could be another Sinatra application,
 or any other Rack-based application (Rails/Hanami/Roda/...):
 
@@ -2912,7 +2657,7 @@ available.
 Every Sinatra application corresponds to a subclass of `Sinatra::Base`.
 If you are using the top-level DSL (`require 'sinatra'`), then this
 class is `Sinatra::Application`, otherwise it is the subclass you
-created explicitly. At class level you have methods like `get` or
+created explicitly. At the class level, you have methods like `get` or
 `before`, but you cannot access the `request` or `session` objects, as
 there is only a single application class for all requests.
 
@@ -2935,7 +2680,7 @@ You have the application scope binding inside:
 * Your application class body
 * Methods defined by extensions
 * The block passed to `helpers`
-* Procs/blocks used as value for `set`
+* Procs/blocks used as a value for `set`
 * The block passed to `Sinatra.new`
 
 You can reach the scope object (the class) like this:
@@ -2986,7 +2731,7 @@ do not share variables/state with the class scope (read: you have a different
 
 You have the delegate scope binding inside:
 
-* The top level binding, if you did `require "sinatra"`
+* The top-level binding, if you did `require "sinatra"`
 * An object extended with the `Sinatra::Delegator` mixin
 
 Have a look at the code for yourself: here's the
@@ -3008,7 +2753,7 @@ Options are:
 -p # set the port (default is 4567)
 -o # set the host (default is 0.0.0.0)
 -e # set the environment (default is development)
--s # specify rack server/handler (default is thin)
+-s # specify rack server/handler (default is puma)
 -q # turn on quiet mode for server (default is off)
 -x # turn on the mutex lock (default is off)
 ```
@@ -3019,16 +2764,16 @@ _Paraphrasing from
 [this StackOverflow answer](https://stackoverflow.com/a/6282999/5245129)
 by Konstantin_
 
-Sinatra doesn't impose any concurrency model, but leaves that to the
-underlying Rack handler (server) like Thin, Puma or WEBrick. Sinatra
+Sinatra doesn't impose any concurrency model but leaves that to the
+underlying Rack handler (server) like Puma or WEBrick. Sinatra
 itself is thread-safe, so there won't be any problem if the Rack handler
 uses a threaded model of concurrency. This would mean that when starting
 the server, you'd have to specify the correct invocation method for the
 specific Rack handler. The following example is a demonstration of how
-to start a multi-threaded Thin server:
+to start a multi-threaded Rainbows server:
 
 ```ruby
-# app.rb
+# config.ru
 
 require 'sinatra/base'
 
@@ -3038,23 +2783,31 @@ class App < Sinatra::Base
   end
 end
 
-App.run!
+run App
+```
 
+```ruby
+# rainbows.conf
+
+# Rainbows configurator is based on Unicorn.
+Rainbows! do
+  use :ThreadSpawn
+end
 ```
 
 To start the server, the command would be:
 
 ```shell
-thin --threaded start
+rainbows -c rainbows.conf
 ```
 
 ## Requirement
 
 The following Ruby versions are officially supported:
 <dl>
-  <dt>Ruby 2.2</dt>
+  <dt>Ruby 2.6</dt>
   <dd>
-    2.2 is fully supported and recommended. There are currently no plans to
+    2.6 is fully supported and recommended. There are currently no plans to
     drop official support for it.
   </dd>
 
@@ -3072,32 +2825,15 @@ The following Ruby versions are officially supported:
   </dd>
 </dl>
 
-Versions of Ruby prior to 2.2.2 are no longer supported as of Sinatra 2.0.
+Versions of Ruby before 2.6 are no longer supported as of Sinatra 3.0.0.
 
-We also keep an eye on upcoming Ruby versions.
-
-The following Ruby implementations are not officially supported but still are
-known to run Sinatra:
-
-* Older versions of JRuby and Rubinius
-* Ruby Enterprise Edition
-* MacRuby, Maglev, IronRuby
-* Ruby 1.9.0 and 1.9.1 (but we do recommend against using those)
-
-Not being officially supported means if things only break there and not on a
-supported platform, we assume it's not our issue but theirs.
-
-We also run our CI against ruby-head (future releases of MRI), but we
-can't guarantee anything, since it is constantly moving. Expect upcoming
-2.x releases to be fully supported.
+We also keep an eye on upcoming Ruby versions. Expect upcoming
+3.x releases to be fully supported.
 
 Sinatra should work on any operating system supported by the chosen Ruby
 implementation.
 
-If you run MacRuby, you should `gem install control_tower`.
-
-Sinatra currently doesn't run on Cardinal, SmallRuby, BlueRuby or any
-Ruby version prior to 2.2.
+Running Sinatra on a not officially supported Ruby flavor means that if things only break there we assume it's not our issue but theirs.
 
 ## The Bleeding Edge
 
@@ -3167,4 +2903,4 @@ SemVerTag.
 * API documentation for the [latest release](http://www.rubydoc.info/gems/sinatra)
   or the [current HEAD](http://www.rubydoc.info/github/sinatra/sinatra) on
   [RubyDoc](http://www.rubydoc.info/)
-* [CI server](https://travis-ci.org/sinatra/sinatra)
+* [CI Actions](https://github.com/sinatra/sinatra/actions)

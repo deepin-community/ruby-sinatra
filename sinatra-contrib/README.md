@@ -22,8 +22,8 @@ Currently included:
 
 * [`sinatra/config_file`][sinatra-config-file]: Allows loading configuration from yaml files.
 
-* [`sinatra/content_for`][sinatra-content-for]: Adds Rails-style `content_for` helpers to Haml, Erb, Erubi,
-  Erubis and Slim.
+* [`sinatra/content_for`][sinatra-content-for]: Adds Rails-style `content_for` helpers to Haml, Erb, Erubi
+  and Slim.
 
 * [`sinatra/cookies`][sinatra-cookies]: A `cookies` helper for reading and writing cookies.
 
@@ -58,7 +58,9 @@ existing APIs.
 
 Currently included:
 
-* [`sinatra/reloader`][sinatra-reloader]: Automatically reloads Ruby files on code changes.
+* [`sinatra/reloader`][sinatra-reloader]: Automatically reloads Ruby files on code changes. **DEPRECATED**: Please consider
+consider using an alternative like [rerun](https://github.com/alexch/rerun) or
+[rack-unreloader](https://github.com/jeremyevans/rack-unreloader) instead.
 
 ### Other Tools
 
@@ -66,6 +68,9 @@ Currently included:
 
 * [`sinatra/test_helpers`][sinatra-test-helpers]: Helper methods to ease testing your Sinatra
   application. Partly extracted from Sinatra. Testing framework agnostic
+
+* `sinatra/quiet_logger`: Extension to exclude specific pathes from access log.
+  It works by patching Rack::CommonLogger
 
 ## Installation
 

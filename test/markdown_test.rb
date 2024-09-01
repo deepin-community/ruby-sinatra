@@ -1,9 +1,9 @@
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('helper', __dir__)
 
 MarkdownTest = proc do
   def markdown_app(&block)
     mock_app do
-      set :views, File.dirname(__FILE__) + '/views'
+      set :views, __dir__ + '/views'
       get('/', &block)
     end
     get '/'
@@ -68,10 +68,13 @@ MarkdownTest = proc do
   end
 end
 
-# Will generate RDiscountTest, KramdownTest, etc.
-markdown_templates = Tilt.lazy_map['md'].map { |klass, _require_path| klass }
-
-markdown_templates.each do |template_name|
+[
+  "Tilt::PandocTemplate",
+  "Tilt::CommonMarkerTemplate",
+  "Tilt::KramdownTemplate",
+  "Tilt::RedcarpetTemplate",
+  "Tilt::RDiscountTemplate"
+].each do |template_name|
   begin
     template = Object.const_get(template_name)
 

@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-describe Sinatra::ContentFor do
+RSpec.describe Sinatra::ContentFor do
   subject do
     Sinatra.new do
       helpers Sinatra::ContentFor
-      set :views, File.expand_path("../content_for", __FILE__)
+      set :views, File.expand_path("content_for", __dir__)
     end.new!
   end
 
   Tilt.prefer Tilt::ERBTemplate
-  require 'hamlit/block'
+  require 'hamlit'
   Tilt.register Tilt::HamlTemplate, :haml
 
   extend Forwardable
@@ -90,8 +90,8 @@ describe Sinatra::ContentFor do
     end
   end
 
-  # TODO: liquid radius markaby builder nokogiri
-  engines = %w[erb erubi erubis haml hamlit slim]
+  # TODO: liquid markaby builder nokogiri
+  engines = %w[erb erubi haml hamlit slim]
 
   engines.each do |inner|
     describe inner.capitalize do
@@ -215,7 +215,7 @@ describe Sinatra::ContentFor do
             mock_app do
               helpers Sinatra::ContentFor
               set inner, :layout_engine => outer
-              set :views, File.expand_path("../content_for", __FILE__)
+              set :views, File.expand_path("content_for", __dir__)
               get('/:view') { render(inner, params[:view].to_sym) }
               get('/:layout/:view') do
                 render inner, params[:view].to_sym, :layout => params[:layout].to_sym

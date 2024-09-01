@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'rack/protection'
 require 'securerandom'
+require 'openssl'
 require 'base64'
 
 module Rack
@@ -16,13 +19,23 @@ module Rack
     # It checks the <tt>X-CSRF-Token</tt> header and the <tt>POST</tt> form
     # data.
     #
-    # Compatible with the {rack-csrf}[https://rubygems.org/gems/rack_csrf] gem.
+    # It is not OOTB-compatible with the {rack-csrf}[https://rubygems.org/gems/rack_csrf] gem.
+    # For that, the following patch needs to be applied:
+    #
+    #   Rack::Protection::AuthenticityToken.default_options(key: "csrf.token", authenticity_param: "_csrf")
     #
     # == Options
     #
     # [<tt>:authenticity_param</tt>] the name of the param that should contain
     #                                the token on a request. Default value:
     #                                <tt>"authenticity_token"</tt>
+    #
+    # [<tt>:key</tt>] the name of the param that should contain
+    #                                the token in the session. Default value:
+    #                                <tt>:csrf</tt>
+    #
+    # [<tt>:allow_if</tt>] a proc for custom allow/deny logic. Default value:
+    #                                <tt>nil</tt>
     #
     # == Example: Forms application
     #
@@ -63,7 +76,7 @@ module Rack
     #             <h1>With Authenticity Token</h1>
     #             <p>This successfully takes you to back to this form.</p>
     #             <form action="" method="post">
-    #               <input type="hidden" name="authenticity_token" value="#{env['rack.session'][:csrf]}" />
+    #               <input type="hidden" name="authenticity_token" value="#{Rack::Protection::AuthenticityToken.token(env['rack.session'])}" />
     #               <input type="text" name="foo" />
     #               <input type="submit" />
     #             </form>
@@ -84,42 +97,57 @@ module Rack
     class AuthenticityToken < Base
       TOKEN_LENGTH = 32
 
-      default_options :authenticity_param => 'authenticity_token',
-                      :allow_if => nil
+      default_options authenticity_param: 'authenticity_token',
+                      key: :csrf,
+                      allow_if: nil
 
-      def self.token(session)
-        self.new(nil).mask_authenticity_token(session)
+      def self.token(session, path: nil, method: :post)
+        new(nil).mask_authenticity_token(session, path: path, method: method)
       end
 
       def self.random_token
-        SecureRandom.base64(TOKEN_LENGTH)
+        SecureRandom.urlsafe_base64(TOKEN_LENGTH, padding: false)
       end
 
       def accepts?(env)
-        session = session env
+        session = session(env)
         set_token(session)
 
         safe?(env) ||
-          valid_token?(session, env['HTTP_X_CSRF_TOKEN']) ||
-          valid_token?(session, Request.new(env).params[options[:authenticity_param]]) ||
-          ( options[:allow_if] && options[:allow_if].call(env) )
+          valid_token?(env, env['HTTP_X_CSRF_TOKEN']) ||
+          valid_token?(env, Request.new(env).params[options[:authenticity_param]]) ||
+          options[:allow_if]&.call(env)
+      rescue StandardError
+        false
       end
 
-      def mask_authenticity_token(session)
-        token = set_token(session)
+      def mask_authenticity_token(session, path: nil, method: :post)
+        set_token(session)
+
+        token = if path && method
+                  per_form_token(session, path, method)
+                else
+                  global_token(session)
+                end
+
         mask_token(token)
       end
+
+      GLOBAL_TOKEN_IDENTIFIER = '!real_csrf_token'
+      private_constant :GLOBAL_TOKEN_IDENTIFIER
 
       private
 
       def set_token(session)
-        session[:csrf] ||= self.class.random_token
+        session[options[:key]] ||= self.class.random_token
       end
 
       # Checks the client's masked token to see if it matches the
       # session token.
-      def valid_token?(session, token)
-        return false if token.nil? || token.empty?
+      def valid_token?(env, token)
+        return false if token.nil? || !token.is_a?(String) || token.empty?
+
+        session = session(env)
 
         begin
           token = decode_token(token)
@@ -131,13 +159,13 @@ module Rack
         # to handle any unmasked tokens that we've issued without error.
 
         if unmasked_token?(token)
-          compare_with_real_token token, session
-
+          compare_with_real_token(token, session)
         elsif masked_token?(token)
           token = unmask_token(token)
 
-          compare_with_real_token token, session
-
+          compare_with_global_token(token, session) ||
+            compare_with_real_token(token, session) ||
+            compare_with_per_form_token(token, session, Request.new(env))
         else
           false # Token is malformed
         end
@@ -147,7 +175,6 @@ module Rack
       # on each request. The masking is used to mitigate SSL attacks
       # like BREACH.
       def mask_token(token)
-        token = decode_token(token)
         one_time_pad = SecureRandom.random_bytes(token.length)
         encrypted_token = xor_byte_strings(one_time_pad, token)
         masked_token = one_time_pad + encrypted_token
@@ -160,7 +187,7 @@ module Rack
         # value and decrypt it
         token_length = masked_token.length / 2
         one_time_pad = masked_token[0...token_length]
-        encrypted_token = masked_token[token_length..-1]
+        encrypted_token = masked_token[token_length..]
         xor_byte_strings(one_time_pad, encrypted_token)
       end
 
@@ -176,20 +203,52 @@ module Rack
         secure_compare(token, real_token(session))
       end
 
+      def compare_with_global_token(token, session)
+        secure_compare(token, global_token(session))
+      end
+
+      def compare_with_per_form_token(token, session, request)
+        secure_compare(token,
+                       per_form_token(session, request.path.chomp('/'), request.request_method))
+      end
+
       def real_token(session)
-        decode_token(session[:csrf])
+        decode_token(session[options[:key]])
+      end
+
+      def global_token(session)
+        token_hmac(session, GLOBAL_TOKEN_IDENTIFIER)
+      end
+
+      def per_form_token(session, path, method)
+        token_hmac(session, "#{path}##{method.downcase}")
       end
 
       def encode_token(token)
-        Base64.strict_encode64(token)
+        Base64.urlsafe_encode64(token)
       end
 
       def decode_token(token)
-        Base64.strict_decode64(token)
+        Base64.urlsafe_decode64(token)
+      end
+
+      def token_hmac(session, identifier)
+        OpenSSL::HMAC.digest(
+          OpenSSL::Digest.new('SHA256'),
+          real_token(session),
+          identifier
+        )
       end
 
       def xor_byte_strings(s1, s2)
-        s1.bytes.zip(s2.bytes).map { |(c1,c2)| c1 ^ c2 }.pack('c*')
+        s2 = s2.dup
+        size = s1.bytesize
+        i = 0
+        while i < size
+          s2.setbyte(i, s1.getbyte(i) ^ s2.getbyte(i))
+          i += 1
+        end
+        s2
       end
     end
   end

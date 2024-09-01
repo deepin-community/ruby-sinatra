@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sinatra/base'
 require 'rack'
 begin
@@ -13,19 +15,6 @@ module Sinatra
   # Helper methods to ease testing your Sinatra application. Partly extracted
   # from Sinatra. Testing framework agnostic.
   module TestHelpers
-    # Test variant of session, which exposes a `global_env`.
-    class Session < Rack::Test::Session
-      def global_env
-        @global_env ||= {}
-      end
-
-      private
-
-      def default_env
-        super.merge global_env
-      end
-    end
-
     include Rack::Test::Methods
     extend Forwardable
     attr_accessor :settings
@@ -171,7 +160,7 @@ module Sinatra
       # @param params [Hash]
       # @param env [Hash]
       def options(uri, params = {}, env = {}, &block)
-        env = env_for(uri, env.merge(:method => "OPTIONS", :params => params))
+        env = env_for(uri, env.merge(method: 'OPTIONS', params: params))
         current_session.send(:process_request, uri, env, &block)
       end
     end
@@ -183,7 +172,7 @@ module Sinatra
       # @param params [Hash]
       # @param env [Hash]
       def patch(uri, params = {}, env = {}, &block)
-        env = env_for(uri, env.merge(:method => "PATCH", :params => params))
+        env = env_for(uri, env.merge(method: 'PATCH', params: params))
         current_session.send(:process_request, uri, env, &block)
       end
     end
@@ -200,17 +189,14 @@ module Sinatra
     # @return [Hash] Session of last request, or the empty Hash
     def session
       return {} unless last_request?
-      raise Rack::Test::Error, "session not enabled for app" unless last_env["rack.session"] or app.session?
+      raise Rack::Test::Error, 'session not enabled for app' unless last_env['rack.session'] || app.session?
+
       last_request.session
     end
 
     # @return The env of the last request
     def last_env
       last_request.env
-    end
-
-    def build_rack_test_session(name) # :nodoc:
-      Session.new rack_mock_session(name)
     end
   end
 end

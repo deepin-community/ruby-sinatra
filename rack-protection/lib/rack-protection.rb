@@ -1,1 +1,1 @@
-require "rack/protection"
+require 'rack/protection'
