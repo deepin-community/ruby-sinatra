@@ -1,0 +1,65 @@
+From c5b8872473d379202da83ac7e00bb90f9ee6a0b1 Mon Sep 17 00:00:00 2001
+From: Antonio Terceiro <terceiro@debian.org>
+Date: Fri, 23 Dec 2022 22:57:59 -0300
+Subject: [PATCH] Tests against Haml 6
+
+In Haml 6, = escapes the results of the Ruby expression by default. If
+you want that to be a nested  template it needs to be called with !=.
+
+Also, attr_wrapper is no longer a valid option.
+---
+ Gemfile           |  2 +-
+ test/haml_test.rb | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+--- a/Gemfile
++++ b/Gemfile
+@@ -39,7 +39,7 @@ gem 'commonmarker', '~> 0.23.4', platfor
+ gem 'erubi'
+ gem 'eventmachine'
+ gem 'falcon', '~> 0.40', platforms: [:ruby]
+-gem 'haml', '~> 5'
++gem 'haml', '~> 6'
+ gem 'kramdown'
+ gem 'liquid'
+ gem 'markaby'
+--- a/test/haml_test.rb
++++ b/test/haml_test.rb
+@@ -26,7 +26,7 @@ class HAMLTest < Minitest::Test
+ 
+   it "renders with inline layouts" do
+     mock_app do
+-      layout { %q(%h1= 'THIS. IS. ' + yield.upcase) }
++      layout { %q(%h1!= 'THIS. IS. ' + yield.upcase) }
+       get('/') { haml '%em Sparta' }
+     end
+     get '/'
+@@ -66,7 +66,7 @@ class HAMLTest < Minitest::Test
+ 
+   it "merges the default HAML options with the overrides and passes them to the Haml engine" do
+     mock_app do
+-      set :haml, {:format => :html5, :attr_wrapper => '"'} # default HAML attr are <tag attr='single-quoted'>
++      set :haml, {:format => :html5}
+       get('/') { haml "!!!\n%h1{:class => :header} Hello World" }
+       get('/html4') {
+         haml "!!!\n%h1{:class => 'header'} Hello World", :format => :html4
+@@ -74,7 +74,7 @@ class HAMLTest < Minitest::Test
+     end
+     get '/'
+     assert ok?
+-    assert_equal "<!DOCTYPE html>\n<h1 class=\"header\">Hello World</h1>\n", body
++    assert_equal "<!DOCTYPE html>\n<h1 class='header'>Hello World</h1>\n", body
+     get '/html4'
+     assert ok?
+     assert_match(/^<!DOCTYPE html PUBLIC (.*) HTML 4.01/, body)
+@@ -87,8 +87,8 @@ class HAMLTest < Minitest::Test
+ 
+   it "can render truly nested layouts by accepting a layout and a block with the contents" do
+     mock_app do
+-      template(:main_outer_layout) { "%h1 Title\n= yield" }
+-      template(:an_inner_layout) { "%h2 Subtitle\n= yield" }
++      template(:main_outer_layout) { "%h1 Title\n!= yield" }
++      template(:an_inner_layout) { "%h2 Subtitle\n!= yield" }
+       template(:a_page) { "%p Contents." }
+       get('/') do
+         haml :main_outer_layout, :layout => false do

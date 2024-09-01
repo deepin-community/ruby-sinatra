@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Rack
   module Protection
-    VERSION = '2.0.8.1'
+    VERSION = '3.0.5'
   end
 end

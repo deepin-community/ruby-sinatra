@@ -1,13 +1,15 @@
-require 'rake/testtask'
+require 'gem2deb/rake/testtask'
 
-task :default => :test
-
-task :test do
+task :default do
   ENV['LANG'] = 'C'
   ENV.delete 'LC_CTYPE'
 end
 
-Rake::TestTask.new(:test) do |t|
-  t.test_files = FileList['test/*_test.rb']
-  t.ruby_opts << '-I.'
-end if ENV['DEB_BUILD_PROFILES'] != 'nocheck'
+EXCLUDE_TESTS = %w[
+   test/coffee_test.rb
+]
+
+Gem2Deb::Rake::TestTask.new do |t|
+  t.libs = ['test']
+  t.test_files = FileList['test/**/*_test.rb'] + FileList['test/**/test_*.rb'] - EXCLUDE_TESTS
+end

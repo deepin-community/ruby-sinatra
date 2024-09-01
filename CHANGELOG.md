@@ -1,3 +1,193 @@
+## Unreleased
+
+* _Your new feature here._
+
+## 3.0.5 / 2022-12-16
+
+* Fix: Add Zeitwerk compatibility. [#1831](https://github.com/sinatra/sinatra/pull/1831) by Dawid Janczak
+
+* Fix: Allow CALLERS_TO_IGNORE to be overridden
+
+## 3.0.4 / 2022-11-25
+
+* Fix: Escape filename in the Content-Disposition header. [#1841](https://github.com/sinatra/sinatra/pull/1841) by Kunpei Sakai
+
+## 3.0.3 / 2022-11-11
+
+* Fix: fixed ReDoS for Rack::Protection::IPSpoofing. [#1823](https://github.com/sinatra/sinatra/pull/1823) by @ooooooo-q
+
+## 3.0.2 / 2022-10-01
+
+* New: Add Haml 6 support. [#1820](https://github.com/sinatra/sinatra/pull/1820) by Jordan Owens
+
+## 3.0.1 / 2022-09-26
+
+* Fix: Revert removal of rack-protection.rb. [#1814](https://github.com/sinatra/sinatra/pull/1814) by Olle Jonsson
+
+* Fix: Revert change to server start and stop messaging by using Kernel#warn. Renamed internal warn method warn_for_deprecation. [#1818](https://github.com/sinatra/sinatra/pull/1818) by Jordan Owens
+
+## 3.0.0 / 2022-09-26
+
+* New: Add Falcon support. [#1794](https://github.com/sinatra/sinatra/pull/1794) by Samuel Williams and @horaciob
+
+* New: Add AES GCM encryption support for session cookies. [#1324] (https://github.com/sinatra/sinatra/pull/1324) by Michael Coyne
+
+* Deprecated: Sinatra Reloader will be removed in the next major release.
+
+* Fix: Internal Sinatra errors now extend `Sinatra::Error`. This fixes [#1204](https://github.com/sinatra/sinatra/issues/1204) and [#1518](https://github.com/sinatra/sinatra/issues/1518). [bda8c29d](https://github.com/sinatra/sinatra/commit/bda8c29d70619d53f5b1c181140638d340695514) by Jordan Owens
+
+* Fix: Preserve query param value if named route param nil. [#1676](https://github.com/sinatra/sinatra/pull/1676) by Jordan Owens
+
+* Require Ruby 2.6 as minimum Ruby version. [#1699](https://github.com/sinatra/sinatra/pull/1699) by Eloy Pérez
+
+* Breaking change: Remove support for the Stylus template engine. [#1697](https://github.com/sinatra/sinatra/pull/1697) by Eloy Pérez
+
+* Breaking change: Remove support for the erubis template engine. [#1761](https://github.com/sinatra/sinatra/pull/1761) by Eloy Pérez
+
+* Breaking change: Remove support for the textile template engine. [#1766](https://github.com/sinatra/sinatra/pull/1766) by Eloy Pérez
+
+* Breaking change: Remove support for SASS as a template engine. [#1768](https://github.com/sinatra/sinatra/pull/1768) by Eloy Pérez
+
+* Breaking change: Remove support for Wlang as a template engine. [#1780](https://github.com/sinatra/sinatra/pull/1780) by Eloy Pérez
+
+* Breaking change: Remove support for CoffeeScript as a template engine. [#1790](https://github.com/sinatra/sinatra/pull/1790) by Eloy Pérez
+
+* Breaking change: Remove support for Mediawiki as a template engine. [#1791](https://github.com/sinatra/sinatra/pull/1791) by Eloy Pérez
+
+* Breaking change: Remove support for Creole as a template engine. [#1792](https://github.com/sinatra/sinatra/pull/1792) by Eloy Pérez
+
+* Breaking change: Remove support for Radius as a template engine. [#1793](https://github.com/sinatra/sinatra/pull/1793) by Eloy Pérez
+
+* Breaking change: Remove support for the defunct Less templating library. See [#1716](https://github.com/sinatra/sinatra/issues/1716), [#1715](https://github.com/sinatra/sinatra/issues/1715) for more discussion and background. [d1af2f1e](https://github.com/sinatra/sinatra/commit/d1af2f1e6c8710419dfe3102a660f7a32f0e67e3) by Olle Jonsson
+
+* Breaking change: Remove Reel integration. [54597502](https://github.com/sinatra/sinatra/commit/545975025927a27a1daca790598620038979f1c5) by Olle Jonsson
+
+* CI: Start testing on Ruby 3.1. [60e221940](https://github.com/sinatra/sinatra/commit/60e2219407e6ae067bf3e53eb060ee4860c60c8d) and [b0fa4bef](https://github.com/sinatra/sinatra/commit/b0fa4beffaa3b10bf02947d0a35e137403296c6b) by Johannes Würbach
+
+* Use `Kernel#caller_locations`. [#1491](https://github.com/sinatra/sinatra/pull/1491) by Julik Tarkhanov
+
+* Docs: Japanese documentation: Add notes about the `default_content_type` setting. [#1650](https://github.com/sinatra/sinatra/pull/1650)  by Akifumi Tominaga
+
+* Docs: Polish documentation: Add section about Multithreaded modes and Routes. [#1708](https://github.com/sinatra/sinatra/pull/1708) by Patrick Gramatowski
+
+* Docs: Japanese documentation: Make Session section reflect changes done to README.md. [#1731](https://github.com/sinatra/sinatra/pull/1731) by @shu-i-chi
+
+## 2.2.3 / 2022-11-25
+
+* Fix: Escape filename in the Content-Disposition header. [#1841](https://github.com/sinatra/sinatra/pull/1841) by Kunpei Sakai
+
+* Fix: fixed ReDoS for Rack::Protection::IPSpoofing. [#1823](https://github.com/sinatra/sinatra/pull/1823) by @ooooooo-q
+
+## 2.2.2 / 2022-07-23
+
+* Update mustermann dependency to version 2.
+
+## 2.2.1 / 2022-07-15
+
+* Fix JRuby regression by using ruby2_keywords for delegation. #1750 by Patrik Ragnarsson
+
+* Add JRuby to CI. #1755 by Karol Bucek
+
+## 2.2.0 / 2022-02-15
+
+* Breaking change: Add `#select`, `#reject` and `#compact` methods to `Sinatra::IndifferentHash`. If hash keys need to be converted to symbols, call `#to_h` to get a `Hash` instance first. [#1711](https://github.com/sinatra/sinatra/pull/1711) by Olivier Bellone
+
+* Handle EOFError raised by Rack and return Bad Request 400 status. [#1743](https://github.com/sinatra/sinatra/pull/1743) by tamazon
+
+* Minor refactors in `base.rb`. [#1640](https://github.com/sinatra/sinatra/pull/1640) by ceclinux
+
+* Add escaping to the static 404 page. [#1645](https://github.com/sinatra/sinatra/pull/1645) by Chris Gavin
+
+* Remove `detect_rack_handler` method. [#1652](https://github.com/sinatra/sinatra/pull/1652) by ceclinux
+
+* Respect content type set in superclass before filter. Fixes [#1647](https://github.com/sinatra/sinatra/issues/1647) [#1649](https://github.com/sinatra/sinatra/pull/1649) by Jordan Owens
+
+* *Revert "Use prepend instead of include for helpers.* [#1662](https://github.com/sinatra/sinatra/pull/1662) by namusyaka
+
+* Fix usage of inherited `Sinatra::Base` classes keyword arguments. Fixes [#1669](https://github.com/sinatra/sinatra/issues/1669) [#1670](https://github.com/sinatra/sinatra/pull/1670) by Cadu Ribeiro
+
+* Reduce RDoc generation time by not including every README. Fixes [#1578](https://github.com/sinatra/sinatra/issues/1578) [#1671](https://github.com/sinatra/sinatra/pull/1671) by Eloy Pérez
+
+* Add support for per form csrf tokens. Fixes [#1616](https://github.com/sinatra/sinatra/issues/1616) [#1653](https://github.com/sinatra/sinatra/pull/1653) by Jordan Owens
+
+* Update MAINTENANCE.md with the `stable` branch status. [#1681](https://github.com/sinatra/sinatra/pull/1681) by Fredrik Rubensson
+
+* Validate expanded path matches `public_dir` when serving static files. [#1683](https://github.com/sinatra/sinatra/pull/1683) by cji-stripe
+
+* Fix Delegator to pass keyword arguments for Ruby 3.0. [#1684](https://github.com/sinatra/sinatra/pull/1684) by andrewtblake
+
+* Fix use with keyword arguments for Ruby 3.0. [#1701](https://github.com/sinatra/sinatra/pull/1701) by Robin Wallin
+
+* Fix memory leaks for proc template. Fixes [#1704](https://github.com/sinatra/sinatra/issues/1714) [#1719](https://github.com/sinatra/sinatra/pull/1719) by Slevin
+
+* Remove unnecessary `test_files` from the gemspec. [#1712](https://github.com/sinatra/sinatra/pull/1712) by Masataka Pocke Kuwabara
+
+* Docs: Spanish documentation: Update README.es.md with removal of Thin. [#1630](https://github.com/sinatra/sinatra/pull/1630) by Espartaco Palma
+
+* Docs: German documentation: Fixed typos in German README.md. [#1648](https://github.com/sinatra/sinatra/pull/1648) by Juri
+
+* Docs: Japanese documentation: Update README.ja.md with removal of Thin. [#1629](https://github.com/sinatra/sinatra/pull/1629) by Ryuichi KAWAMATA
+
+* Docs: English documentation: Various minor fixes to README.md. [#1663](https://github.com/sinatra/sinatra/pull/1663) by Yanis Zafirópulos
+
+* Docs: English documentation: Document when `dump_errors` is enabled. Fixes [#1664](https://github.com/sinatra/sinatra/issues/1664) [#1665](https://github.com/sinatra/sinatra/pull/1665) by Patrik Ragnarsson
+
+* Docs: Brazilian Portuguese documentation: Update README.pt-br.md with translation fixes. [#1668](https://github.com/sinatra/sinatra/pull/1668) by Vitor Oliveira
+
+### CI
+
+* Use latest JRuby 9.2.16.0 on CI. [#1682](https://github.com/sinatra/sinatra/pull/1682) by Olle Jonsson
+
+* Switch CI from travis to GitHub Actions. [#1691](https://github.com/sinatra/sinatra/pull/1691) by namusyaka
+
+* Skip the Slack action if `secrets.SLACK_WEBHOOK` is not set. [#1705](https://github.com/sinatra/sinatra/pull/1705) by Robin Wallin
+
+* Small CI improvements. [#1703](https://github.com/sinatra/sinatra/pull/1703) by Robin Wallin
+
+* Drop auto-generated boilerplate comments from CI configuration file. [#1728](https://github.com/sinatra/sinatra/pull/1728) by Olle Jonsson
+
+### sinatra-contrib
+
+* Do not raise when key is an enumerable. [#1619](https://github.com/sinatra/sinatra/pull/1619) by Ulysse Buonomo
+
+### Rack protection
+
+* Fix broken `origin_whitelist` option. Fixes [#1641](https://github.com/sinatra/sinatra/issues/1641) [#1642](https://github.com/sinatra/sinatra/pull/1642) by Takeshi YASHIRO
+
+## 2.1.0 / 2020-09-05
+
+* Fix additional Ruby 2.7 keyword warnings [#1586](https://github.com/sinatra/sinatra/pull/1586) by Stefan Sundin
+
+* Drop Ruby 2.2 support [#1455](https://github.com/sinatra/sinatra/pull/1455) by Eloy Pérez
+
+* Add Rack::Protection::ReferrerPolicy [#1291](https://github.com/sinatra/sinatra/pull/1291) by Stefan Sundin
+
+* Add `default_content_type` setting. Fixes [#1238](https://github.com/sinatra/sinatra/pull/1238) [#1239](https://github.com/sinatra/sinatra/pull/1239) by Mike Pastore
+
+* Allow `set :<engine>` in sinatra-namespace [#1255](https://github.com/sinatra/sinatra/pull/1255) by Christian Höppner
+
+* Use prepend instead of include for helpers. Fixes [#1213](https://github.com/sinatra/sinatra/pull/1213) [#1214](https://github.com/sinatra/sinatra/pull/1214) by Mike Pastore
+
+* Fix issue with passed routes and provides Fixes [#1095](https://github.com/sinatra/sinatra/pull/1095) [#1606](https://github.com/sinatra/sinatra/pull/1606) by Mike Pastore, Jordan Owens
+
+* Add QuietLogger that excludes pathes from Rack::CommonLogger [1250](https://github.com/sinatra/sinatra/pull/1250) by Christoph Wagner
+
+* Sinatra::Contrib dependency updates. Fixes [#1207](https://github.com/sinatra/sinatra/pull/1207) [#1411](https://github.com/sinatra/sinatra/pull/1411) by Mike Pastore
+
+* Allow CSP to fallback to default-src. Fixes [#1484](https://github.com/sinatra/sinatra/pull/1484) [#1490](https://github.com/sinatra/sinatra/pull/1490) by Jordan Owens
+
+* Replace `origin_whitelist` with `permitted_origins`. Closes [#1620](https://github.com/sinatra/sinatra/issues/1620) [#1625](https://github.com/sinatra/sinatra/pull/1625) by rhymes
+
+* Use Rainbows instead of thin for async/stream features. Closes [#1624](https://github.com/sinatra/sinatra/issues/1624) [#1627](https://github.com/sinatra/sinatra/pull/1627) by Ryuichi KAWAMATA
+
+* Enable EscapedParams if passed via settings. Closes [#1615](https://github.com/sinatra/sinatra/issues/1615) [#1632](https://github.com/sinatra/sinatra/issues/1632) by Anders Bälter
+
+* Support for parameters in mime types. Fixes [#1141](https://github.com/sinatra/sinatra/issues/1141) by John Hope
+
+* Handle null byte when serving static files [#1574](https://github.com/sinatra/sinatra/issues/1574) by Kush Fanikiso
+
+* Improve development support and documentation and source code by Olle Jonsson, Pierre-Adrien Buisson, Shota Iguchi
+
 ## 2.0.8.1 / 2020-01-02
 
 * Allow multiple hashes to be passed in `merge` and `merge!` for `Sinatra::IndifferentHash` [#1572](https://github.com/sinatra/sinatra/pull/1572) by Shota Iguchi

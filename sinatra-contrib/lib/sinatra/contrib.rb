@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sinatra/contrib/setup'
 
 module Sinatra
@@ -7,32 +9,31 @@ module Sinatra
     # or breaks if external dependencies are missing. Will extend
     # Sinatra::Application by default.
     module Common
-      register :ConfigFile
-      register :MultiRoute
-      register :Namespace
-      register :RespondWith
+      register :ConfigFile, 'sinatra/config_file'
+      register :MultiRoute, 'sinatra/multi_route'
+      register :Namespace, 'sinatra/namespace'
+      register :RespondWith, 'sinatra/respond_with'
 
-      helpers :Capture
-      helpers :ContentFor
-      helpers :Cookies
-      helpers :EngineTracking
-      helpers :JSON
-      helpers :LinkHeader
-      helpers :Streaming
-      helpers :RequiredParams
+      helpers :Capture, 'sinatra/capture'
+      helpers :ContentFor, 'sinatra/content_for'
+      helpers :Cookies, 'sinatra/cookies'
+      helpers :EngineTracking, 'sinatra/engine_tracking'
+      helpers :JSON, 'sinatra/json'
+      helpers :LinkHeader, 'sinatra/link_header'
+      helpers :Streaming, 'sinatra/streaming'
+      helpers :RequiredParams, 'sinatra/required_params'
     end
 
     ##
     # Other extensions you don't want to be loaded unless needed.
     module Custom
-      # register :Compass
-      register :Reloader
+      register :Reloader, 'sinatra/reloader'
     end
 
     ##
     # Stuff that aren't Sinatra extensions, technically.
-    autoload :Extension
-    autoload :TestHelpers
+    autoload :Extension, 'sinatra/extension'
+    autoload :TestHelpers, 'sinatra/test_helpers'
   end
 
   register Sinatra::Contrib::Common

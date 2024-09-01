@@ -8,13 +8,11 @@ Subject: fix-relative-path
  test/indifferent_hash_test.rb | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/test/indifferent_hash_test.rb b/test/indifferent_hash_test.rb
-index 88d9e73..30330d8 100644
 --- a/test/indifferent_hash_test.rb
 +++ b/test/indifferent_hash_test.rb
-@@ -8,7 +8,7 @@ require 'minitest/autorun' unless defined?(Minitest)
- # outside of the full suite, on older Rubies.
- ENV['SINATRA_ACTIVESUPPORT_WARNING'] = 'false'
+@@ -4,7 +4,7 @@
+ #
+ require 'minitest/autorun' unless defined?(Minitest)
  
 -require_relative '../lib/sinatra/indifferent_hash'
 +require 'sinatra/indifferent_hash'

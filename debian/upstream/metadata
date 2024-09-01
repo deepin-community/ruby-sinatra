@@ -1,0 +1,6 @@
+---
+Bug-Database: https://github.com/sinatra/sinatra/issues
+Bug-Submit: https://github.com/sinatra/sinatra/issues/new
+Repository: https://github.com/sinatra/sinatra.git
+Repository-Browse: https://github.com/sinatra/sinatra
+Security-Contact: https://github.com/sinatra/sinatra/tree/HEAD/SECURITY.md

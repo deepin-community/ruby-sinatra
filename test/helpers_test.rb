@@ -1,4 +1,4 @@
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('helper', __dir__)
 require 'date'
 require 'json'
 
@@ -781,11 +781,23 @@ class HelpersTest < Minitest::Test
       assert_equal '<sinatra></sinatra>', body
     end
 
+    it 'escapes filename in the Content-Disposition header according to the multipart form data spec in WHATWG living standard' do
+      mock_app do
+        get('/attachment') do
+          attachment "test.xml\";\r\next=.txt"
+          response.write("<sinatra></sinatra>")
+        end
+      end
+
+      get '/attachment'
+      assert_equal 'attachment; filename="test.xml%22;%0D%0Aext=.txt"', response['Content-Disposition']
+      assert_equal '<sinatra></sinatra>', body
+    end
   end
 
   describe 'send_file' do
     setup do
-      @file = File.dirname(__FILE__) + '/file.txt'
+      @file = __dir__ + '/file.txt'
       File.open(@file, 'wb') { |io| io.write('Hello World') }
     end
 
@@ -898,7 +910,7 @@ class HelpersTest < Minitest::Test
     end
 
     it "is able to send files with unknown mime type" do
-      @file = File.dirname(__FILE__) + '/file.foobar'
+      @file = __dir__ + '/file.foobar'
       File.open(@file, 'wb') { |io| io.write('Hello World') }
       send_file_app
       get '/file.txt'
@@ -979,6 +991,8 @@ class HelpersTest < Minitest::Test
 
         get('/baz') { expires Time.at(0) }
 
+        get('/bah') { expires Time.at(0), :max_age => 20 }
+
         get('/blah') do
           obj = Object.new
           def obj.method_missing(*a, &b) 60.send(*a, &b) end
@@ -1009,6 +1023,12 @@ class HelpersTest < Minitest::Test
     it 'allows passing Time.at objects' do
       get '/baz'
       assert_equal 'Thu, 01 Jan 1970 00:00:00 GMT', response['Expires']
+    end
+
+    it 'allows max_age to be specified separately' do
+      get '/bah'
+      assert_equal 'Thu, 01 Jan 1970 00:00:00 GMT', response['Expires']
+      assert_equal ['max-age=20'], response['Cache-Control'].split(', ')
     end
 
     it 'accepts values pretending to be a Numeric (like ActiveSupport::Duration)' do
@@ -1946,6 +1966,80 @@ class HelpersTest < Minitest::Test
       get '/'
       assert ok?
       assert_equal '42 &lt; 43', body
+    end
+
+    it 'prepends modules so previously-defined methods can be overridden consistently' do
+      skip <<-EOS
+        This test will be helpful after switching #helpers's code from Module#include to Module#prepend
+        See more details: https://github.com/sinatra/sinatra/pull/1214
+      EOS
+      mock_app do
+        helpers do
+          def one; nil end
+          def two; nil end
+        end
+
+        helpers ::HelperOne do
+          def two; '2' end
+        end
+
+        get('/one') { one }
+        get('/two') { two }
+      end
+
+      get '/one'
+      assert_equal '1', body
+
+      get '/two'
+      assert_equal '2', body
+    end
+
+    module HelpersOverloadingBaseHelper
+      def my_test
+        'BaseHelper#test'
+      end
+    end
+
+    class HelpersOverloadingIncludeAndOverride < Sinatra::Base
+      helpers HelpersOverloadingBaseHelper
+
+      get '/' do
+        my_test
+      end
+
+      helpers do
+        def my_test
+          'InlineHelper#test'
+        end
+      end
+    end
+
+    it 'uses overloaded inline helper' do
+      mock_app(HelpersOverloadingIncludeAndOverride)
+      get '/'
+      assert ok?
+      assert_equal 'InlineHelper#test', body
+    end
+
+    module HelperWithIncluded
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
+
+      module ClassMethods
+        def nickname(name)
+          # do something.
+        end
+      end
+    end
+
+    class ServerApp < Sinatra::Base
+      helpers HelperWithIncluded
+      # `nickname` method should be available.
+    end
+
+    it 'calls included method of helpers' do
+      assert ServerApp.respond_to?(:nickname)
     end
   end
 end

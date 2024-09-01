@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Why use bundler?
 # Well, not all development dependencies install on all rubies. Moreover, `gem
 # install sinatra --development` doesn't work, as it will also try to install
@@ -6,74 +8,52 @@
 #
 # If you have issues with a gem: `bundle install --without-coffee-script`.
 
-RUBY_ENGINE = 'ruby' unless defined? RUBY_ENGINE
-source 'https://rubygems.org' unless ENV['QUICK']
+source 'https://rubygems.org'
 gemspec
 
 gem 'rake'
-gem 'rack', git: 'https://github.com/rack/rack.git'
-gem 'rack-test', '>= 0.6.2'
-gem "minitest", "~> 5.0"
+
+rack_version = ENV['rack'].to_s
+rack_version = nil if rack_version.empty? || (rack_version == 'stable')
+rack_version = { github: 'rack/rack' } if rack_version == 'latest'
+gem 'rack', rack_version
+
+puma_version = ENV['puma'].to_s
+puma_version = nil if puma_version.empty? || (puma_version == 'stable')
+puma_version = { github: 'puma/puma' } if puma_version == 'latest'
+gem 'puma', puma_version
+
+gem 'minitest', '~> 5.0'
+gem 'rack-test', github: 'rack/rack-test'
+gem 'rubocop', '~> 1.32.0', require: false
 gem 'yard'
 
-gem "rack-protection", path: "rack-protection"
-gem "sinatra-contrib", path: "sinatra-contrib"
+gem 'rack-protection', path: 'rack-protection'
+gem 'sinatra-contrib', path: 'sinatra-contrib'
 
-gem "twitter-text", "1.14.7"
+gem 'activesupport', '~> 6.1'
 
-if RUBY_ENGINE == 'jruby'
-  gem 'nokogiri', '!= 1.5.0'
-  gem 'trinidad'
-end
+gem 'asciidoctor'
+gem 'builder'
+gem 'commonmarker', '~> 0.23.4', platforms: [:ruby]
+gem 'erubi'
+gem 'eventmachine'
+gem 'falcon', '~> 0.40', platforms: [:ruby]
+gem 'haml', '~> 5'
+gem 'kramdown'
+gem 'liquid'
+gem 'markaby'
+gem 'nokogiri', '> 1.5.0'
+gem 'pandoc-ruby', '~> 2.0.2'
+gem 'rabl'
+gem 'rainbows', platforms: [:mri] # uses #fork
+gem 'rdiscount', platforms: [:ruby]
+gem 'rdoc'
+gem 'redcarpet', platforms: [:ruby]
+gem 'simplecov', require: false
+gem 'slim', '~> 4'
+gem 'yajl-ruby', platforms: [:ruby]
 
-if RUBY_ENGINE == 'jruby' || RUBY_ENGINE == 'ruby'
-  gem "activesupport", "~> 5.1.6"
-end
+gem 'json', platforms: %i[jruby mri]
 
-if RUBY_ENGINE == "ruby"
-  gem 'less', '~> 2.0'
-  gem 'therubyracer'
-  gem 'redcarpet'
-  gem 'wlang', '>= 2.0.1'
-  gem 'bluecloth'
-  gem 'rdiscount'
-  gem 'RedCloth'
-  gem 'puma'
-  gem 'yajl-ruby'
-  gem 'nokogiri'
-  gem 'thin'
-  gem 'slim', '~> 2.0'
-  gem 'coffee-script', '>= 2.0'
-  gem 'rdoc'
-  gem 'kramdown'
-  gem 'maruku'
-  gem 'creole'
-  gem 'wikicloth'
-  gem 'markaby'
-  gem 'radius'
-  gem 'asciidoctor'
-  gem 'liquid'
-  gem 'stylus'
-  gem 'rabl'
-  gem 'builder'
-  gem 'erubi'
-  gem 'erubis'
-  gem 'haml', '>= 3.0'
-  gem 'sass'
-  gem 'reel-rack'
-  gem 'celluloid', '~> 0.16.0'
-  gem 'commonmarker', '~> 0.20.0'
-  gem 'pandoc-ruby', '~> 2.0.2'
-  gem 'simplecov', require: false
-end
-
-if RUBY_ENGINE == "rbx"
-  gem 'json'
-  gem 'rubysl'
-  gem 'rubysl-test-unit'
-  gem 'erubi'
-end
-
-platforms :jruby do
-  gem 'json'
-end
+gem 'jar-dependencies', '= 0.4.1', platforms: [:jruby] # Gem::LoadError with jar-dependencies 0.4.2

@@ -1,4 +1,4 @@
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('helper', __dir__)
 
 begin
 require 'nokogiri'
@@ -6,14 +6,14 @@ require 'nokogiri'
 class NokogiriTest < Minitest::Test
   def nokogiri_app(&block)
     mock_app do
-      set :views, File.dirname(__FILE__) + '/views'
+      set :views, __dir__ + '/views'
       get('/', &block)
     end
     get '/'
   end
 
   it 'renders inline Nokogiri strings' do
-    nokogiri_app { nokogiri 'xml' }
+    nokogiri_app { nokogiri '' }
     assert ok?
     assert_body %(<?xml version="1.0"?>\n)
   end
